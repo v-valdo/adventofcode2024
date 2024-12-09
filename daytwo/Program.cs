@@ -6,28 +6,26 @@ foreach (string line in file)
 {
     string[] numbers = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-    bool safeRow = true;
-    bool? isIncreasing = null;
+    bool safeRow = false;
 
-    for (int i = 0; i < numbers.Length - 1; i++)
+    if (CheckSafeRow(numbers))
     {
-        if (int.TryParse(numbers[i], out int first) &&
-            int.TryParse(numbers[i + 1], out int next))
-        {
-            if (!CheckSafe(first, next))
-            {
-                safeRow = false;
-                break;
-            }
+        safeRow = true;
+    }
 
-            if (isIncreasing == null)
+    else
+    {
+        var numList = numbers.ToList();
+
+        for (int i = 0; i < numList.Count; i++)
+        {
+            List<string> dampenList = [.. numList];
+
+            dampenList.RemoveAt(i);
+
+            if (CheckSafeRow(dampenList.ToArray()))
             {
-                isIncreasing = first < next;
-            }
-            else if ((isIncreasing == true && first > next)
-            || (isIncreasing == false && first < next))
-            {
-                safeRow = false;
+                safeRow = true;
                 break;
             }
         }
@@ -39,9 +37,37 @@ foreach (string line in file)
     }
 }
 
-System.Console.WriteLine(safeReports);
+Console.WriteLine(safeReports);
 
-bool CheckSafe(int num, int nextNum)
+bool CheckSafePair(int num, int nextNum)
 {
     return !(num == nextNum || Math.Abs(num - nextNum) > 3);
+}
+
+bool CheckSafeRow(string[] nums)
+{
+    bool? increasing = null;
+
+    for (int i = 0; i < nums.Length - 1; i++)
+    {
+        if (int.TryParse(nums[i], out int first) &&
+            int.TryParse(nums[i + 1], out int next))
+        {
+            if (!CheckSafePair(first, next))
+            {
+                return false;
+            }
+
+            if (increasing == null)
+            {
+                increasing = first < next;
+            }
+            else if ((increasing == true && first > next)
+            || (increasing == false && first < next))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }

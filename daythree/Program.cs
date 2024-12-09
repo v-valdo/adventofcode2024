@@ -1,56 +1,44 @@
-﻿string mulBig = File.ReadAllText("mul.txt");
+﻿using System.Text.RegularExpressions;
 
-string ex = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
+string mulBig = File.ReadAllText("mul.txt");
 
-int totalSum = 0;
+int PartOne = 1;
+int PartTwo = 2;
 
-int mulStartIndex = mulBig.IndexOf("mul(");
+Go(PartOne);
 
-while (mulStartIndex != -1)
+Go(PartTwo);
+
+
+void Go(int pt)
 {
-    int mulEndIndex = mulBig.IndexOf(")", mulStartIndex);
+    int sum = 0;
 
-    if (mulEndIndex == -1)
+    bool isEnabled = true;
+
+    Regex regex = new(@"mul\((\d+),(\d+)\)|do\(\)|don't\(\)");
+
+    var matches = regex.Matches(mulBig);
+
+    foreach (Match match in matches)
     {
-        break;
+        if (match.Value == "do()")
+        {
+            if (pt == 2)
+                isEnabled = true;
+        }
+        else if (match.Value == "don't()")
+        {
+            if (pt == 2)
+                isEnabled = false;
+        }
+        else if (match.Value.StartsWith("mul(") && isEnabled)
+        {
+            int x = int.Parse(match.Groups[1].Value);
+            int y = int.Parse(match.Groups[2].Value);
+            sum += x * y;
+        }
     }
 
-    string potentialMul = mulBig.Substring(mulStartIndex, mulEndIndex - mulStartIndex + 1);
-    var (valid, x, y) = CheckShenanigans(potentialMul);
-
-    if (valid)
-    {
-        System.Console.WriteLine(potentialMul);
-        totalSum += x * y;
-        mulStartIndex = mulBig.IndexOf("mul(", mulEndIndex + 1);
-    }
-    else
-    {
-        mulStartIndex = mulBig.IndexOf("mul(", mulStartIndex + 1);
-    }
-}
-
-Console.WriteLine(totalSum);
-
-Tuple<bool, int, int> CheckShenanigans(string mulMethod)
-{
-    if (!mulMethod.StartsWith("mul(") || !mulMethod.EndsWith(")"))
-    {
-        return Tuple.Create(false, 0, 0);
-    }
-
-    int parOne = mulMethod.IndexOf("(");
-    int parTwo = mulMethod.LastIndexOf(")");
-
-    string numbers = mulMethod.Substring(parOne + 1, parTwo - parOne - 1);
-
-    string[] numParts = numbers.Split(',');
-
-    if (numParts.Length == 2
-    && int.TryParse(numParts[0], out int x)
-    && int.TryParse(numParts[1], out int y))
-    {
-        return Tuple.Create(true, x, y);
-    }
-    return Tuple.Create(false, 0, 0);
+    Console.WriteLine("part " + pt + " result: " + sum);
 }

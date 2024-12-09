@@ -18,4 +18,4 @@ Array.Sort(puzzleRight);
 //day 1
 WriteLine("Day 1 sln: " + Problems.DayOne(puzzleLeft, puzzleRight));
 //day2
-WriteLine("Day 2 sln: " + Problems.DayTwo(puzzleLeft, puzzleRight));
+WriteLine("Day 2 sln: " + Problems.DayOnePtTwo(puzzleLeft, puzzleRight));

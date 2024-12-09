@@ -17,13 +17,12 @@ public static class Problems
         return sumOfDiff;
     }
 
-    public static int DayTwo(int[] puzzleLeft, int[] puzzleRight)
+    public static int DayOnePtTwo(int[] puzzleLeft, int[] puzzleRight)
     {
         int sum = 0;
         for (int i = 0; i < puzzleLeft.Length; i++)
         {
             sum += puzzleLeft[i] * puzzleRight.Count(pr => pr == puzzleLeft[i]);
-            WriteLine(sum);
         }
         return sum;
     }
